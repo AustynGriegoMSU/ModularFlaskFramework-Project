@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ safe_url_for('chat_home') }}">All Rooms</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="#">{{ room.name }}</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Chat Messages Area -->
+        <div class="col-lg-9">
+            <div class="card" style="height: 70vh;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">{{ room.name }}</h5>
+                        <small class="text-muted">{{ room.description }}</small>
+                    </div>
+                    <span class="badge bg-success">{{ room.users_online }} online</span>
+                </div>
+                
+                <!-- Messages Container -->
+                <div class="card-body overflow-auto" id="messagesContainer" style="flex: 1;">
+                    {% for message in messages %}
+                    <div class="message mb-3 {% if message.is_own_message %}text-end{% endif %}">
+                        <div class="d-inline-block p-2 rounded {% if message.is_own_message %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 70%;">
+                            {% if not message.is_own_message %}
+                            <div class="fw-bold small text-primary">{{ message.username }}</div>
+                            {% endif %}
+                            <div>{{ message.message }}</div>
+                            <div class="small opacity-75 mt-1">{{ message.timestamp }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Message Input -->
+                <div class="card-footer">
+                    <form id="messageForm" class="d-flex gap-2">
+                        <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Online Users Sidebar -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Online Users</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-circle text-success me-2" style="font-size: 0.5rem;"></i>
+                            <strong>You</strong>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-circle text-success me-2" style="font-size: 0.5rem;"></i>
+                            Alice
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-circle text-success me-2" style="font-size: 0.5rem;"></i>
+                            Bob
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-circle text-warning me-2" style="font-size: 0.5rem;"></i>
+                            Charlie <small class="text-muted ms-auto">away</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Room Actions -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Room Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-share"></i> Invite Users
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-bell-slash"></i> Mute Notifications
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Leave Room
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simple message sending (would integrate with WebSocket in real app)
+document.getElementById('messageForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (message) {
+        // Add message to chat (simplified)
+        const container = document.getElementById('messagesContainer');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message mb-3 text-end';
+        messageDiv.innerHTML = `
+            <div class="d-inline-block p-2 rounded bg-primary text-white" style="max-width: 70%;">
+                <div>${message}</div>
+                <div class="small opacity-75 mt-1">Just now</div>
+            </div>
+        `;
+        container.appendChild(messageDiv);
+        
+        // Clear input and scroll to bottom
+        input.value = '';
+        container.scrollTop = container.scrollHeight;
+        
+        // In a real app, this would send via WebSocket/API
+        fetch('/chat/api/send', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message: message,
+                room_id: {{ room.id }}
+            })
+        });
+    }
+});
+
+// Auto-scroll to bottom
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('messagesContainer');
+    container.scrollTop = container.scrollHeight;
+});
+</script>
+{% endblock %}

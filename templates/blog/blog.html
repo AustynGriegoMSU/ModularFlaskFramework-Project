@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('blog_home') }}">Blog</a>
+</li>
+{% if 'auth' in available_modules and current_user and current_user.username != 'Guest' %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('blog_write') }}">Write</a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block title %}{{ site_name }} - Blog{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main Blog Content -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">Latest Posts</h1>
+                <div class="d-flex gap-2">
+                    <div class="input-group" style="width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search posts..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    {% if 'auth' in request.endpoint %}
+                    <a href="{{ url_for('blog_write') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Write Post
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Featured Post -->
+            {% if posts %}
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="{{ posts[0].featured_image or '/static/placeholder-blog.jpg' }}" 
+                             class="img-fluid rounded-start h-100 object-cover" alt="Featured post">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body h-100 d-flex flex-column">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-primary me-2">{{ posts[0].category }}</span>
+                                <small class="text-muted">{{ posts[0].date }} by {{ posts[0].author }}</small>
+                            </div>
+                            <h3 class="card-title">
+                                <a href="{{ url_for('blog_post', post_id=posts[0].id) }}" class="text-decoration-none">
+                                    {{ posts[0].title }}
+                                </a>
+                            </h3>
+                            <p class="card-text flex-grow-1">{{ posts[0].excerpt }}</p>
+                            <div class="d-flex align-items-center justify-content-between mt-auto">
+                                <div class="d-flex gap-1">
+                                    {% for tag in posts[0].tags %}
+                                    <span class="badge bg-light text-dark">#{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-muted small">
+                                    <i class="bi bi-eye me-1"></i>{{ posts[0].views }}
+                                    <i class="bi bi-chat ms-2 me-1"></i>{{ posts[0].comments }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Posts Grid -->
+            <div class="row">
+                {% for post in posts[1:] %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <img src="{{ post.featured_image or '/static/placeholder-blog.jpg' }}" 
+                             class="card-img-top" style="height: 200px; object-fit: cover;" alt="Post image">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-outline-primary me-2">{{ post.category }}</span>
+                                <small class="text-muted">{{ post.date }}</small>
+                            </div>
+                            <h5 class="card-title">
+                                <a href="{{ url_for('blog_post', post_id=post.id) }}" class="text-decoration-none">
+                                    {{ post.title }}
+                                </a>
+                            </h5>
+                            <p class="card-text flex-grow-1">{{ post.excerpt }}</p>
+                            <div class="d-flex align-items-center justify-content-between mt-auto">
+                                <small class="text-muted">by {{ post.author }}</small>
+                                <div class="text-muted small">
+                                    <i class="bi bi-eye me-1"></i>{{ post.views }}
+                                    <i class="bi bi-chat ms-2 me-1"></i>{{ post.comments }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center">
+                <button class="btn btn-outline-primary">Load More Posts</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Categories -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-folder me-2"></i>Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for category in categories %}
+                    <a href="{{ url_for('blog_category', category_name=category.name.lower()) }}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        {{ category.name }}
+                        <span class="badge bg-primary rounded-pill">{{ category.count }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Popular Tags -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-tags me-2"></i>Popular Tags</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#python</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#tutorial</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#web-dev</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#javascript</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#database</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#api</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#flask</a>
+                        <a href="#" class="badge bg-light text-dark text-decoration-none p-2">#beginner</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Comments -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Recent Comments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <img src="/static/avatar1.jpg" class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <strong>Alice</strong>
+                                <small class="text-muted">2h ago</small>
+                            </div>
+                            <p class="mb-0 small">Great explanation! This really helped...</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <img src="/static/avatar2.jpg" class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <strong>Bob</strong>
+                                <small class="text-muted">5h ago</small>
+                            </div>
+                            <p class="mb-0 small">Looking forward to more advanced topics!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-envelope me-2"></i>Newsletter</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-3">Get the latest posts delivered to your inbox.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.object-cover {
+    object-fit: cover;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.badge.bg-outline-primary {
+    background-color: transparent !important;
+    border: 1px solid var(--bs-primary);
+    color: var(--bs-primary);
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const query = this.value.trim();
+        if (query) {
+            window.location.href = `{{ url_for('blog_search') }}?q=${encodeURIComponent(query)}`;
+        }
+    }
+});
+</script>
+{% endblock %}

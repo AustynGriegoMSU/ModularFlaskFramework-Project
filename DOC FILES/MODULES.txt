@@ -1,0 +1,149 @@
+FLASK MODULAR FRAMEWORK - AVAILABLE MODULES
+=============================================
+
+This file lists all available modules for the Flask modular framework.
+Dependencies are automatically resolved when you use create_app().
+
+⚠️  DEPENDENCY SYSTEM: Modules with dependencies will auto-load required modules.
+❌ Missing dependencies will show clear error messages.
+✅ Auto-resolution prevents configuration mistakes.
+
+CORE MODULES (Ready to Use):
+---------------------------
+
+1. 'main' - Basic Application Routes
+   ├── Routes: /, /about, /contact
+   ├── Templates: index.html, about.html, contact.html
+   ├── Features: Home page, static content pages
+   └── 🔗 Dependencies: None (standalone)
+
+2. 'database' - Database Management
+   ├── SQLite database with user management
+   ├── Context managers for safe operations
+   ├── User profiles and session tracking
+   └── 🔗 Dependencies: None (foundation module)
+
+3. 'auth' - Authentication System
+   ├── Routes: /login, /register, /logout, /profile, /settings
+   ├── Templates: login.html, register.html, logout.html
+   ├── Features: User registration, login/logout, password hashing (bcrypt), session management
+   ├── Database: Users table with profiles
+   └── 🔗 Dependencies: database (auto-loaded) ⚠️
+
+4. 'dashboard' - User Dashboard
+   ├── Routes: /dashboard (also handles / when no main module)
+   ├── Templates: dashboard.html
+   ├── Features: Stats display, activity feed, quick actions, user profile widget
+   ├── Smart Behavior: Works with or without auth (Guest mode vs Protected mode)
+   └── 🔗 Dependencies: None (enhanced by auth if available)
+
+DEPENDENCY EXAMPLES:
+-------------------
+
+# This will auto-load 'database' module:
+app = create_app(modules=['auth'])
+# Output: 
+# 📋 Requested: ['auth']
+# ✅ Loading: ['database', 'auth']
+# ⚠️  Auto-added dependency 'database' required by 'auth'
+
+# This works without dependencies:
+app = create_app(modules=['dashboard'])
+# Output:
+# 📋 Requested: ['dashboard'] 
+# ✅ Loading: ['dashboard']
+
+# Multiple modules with shared dependencies:
+app = create_app(modules=['auth', 'dashboard'])
+# Output:
+# 📋 Requested: ['auth', 'dashboard']
+# ✅ Loading: ['database', 'auth', 'dashboard']
+
+USAGE EXAMPLES:
+--------------
+
+# Simple dashboard-only app
+app = create_app(modules=['dashboard'])
+
+# Authentication-only app
+app = create_app(modules=['auth'])
+
+# Protected dashboard with authentication
+app = create_app(modules=['dashboard', 'auth'])
+
+# Full-featured application
+app = create_app(modules=['main', 'auth', 'dashboard'])
+
+# Basic website with pages only
+app = create_app(modules=['main'])
+
+MODULE FEATURES:
+---------------
+
+✅ Independent Operation: Each module works standalone
+✅ Smart Dependencies: Modules auto-detect available features
+✅ Safe URL Building: Templates won't break if routes don't exist
+✅ Template Inheritance: All modules use consistent base.html
+✅ Context Processors: Modules inject their data into templates
+✅ Flexible Navigation: Navbar adapts based on loaded modules
+
+FUTURE MODULES (Planned):
+------------------------
+
+5. 'blog' - Blog/Content Management
+   ├── Routes: /blog, /blog/post/<id>, /blog/create, /blog/edit/<id>
+   ├── Features: Post creation, editing, comments, categories
+   └── Dependencies: auth (for post creation)
+
+6. 'api' - REST API Endpoints
+   ├── Routes: /api/users, /api/posts, /api/auth
+   ├── Features: JSON responses, API authentication
+   └── Dependencies: auth
+
+7. 'admin' - Admin Panel
+   ├── Routes: /admin, /admin/users, /admin/settings
+   ├── Features: User management, system settings
+   └── Dependencies: auth (admin role required)
+
+8. 'chat' - Real-time Chat
+   ├── Routes: /chat, /chat/room/<id>
+   ├── Features: WebSocket chat, rooms, message history
+   └── Dependencies: auth
+
+9. 'ecommerce' - E-commerce Features
+   ├── Routes: /shop, /cart, /checkout, /orders
+   ├── Features: Product catalog, shopping cart, payment processing
+   └── Dependencies: auth, database
+
+10. 'file_manager' - File Upload/Management
+    ├── Routes: /files, /upload, /download/<id>
+    ├── Features: File upload, download, gallery view
+    └── Dependencies: auth
+
+TECHNICAL NOTES:
+---------------
+
+- All modules use safe_url_for() for cross-module URL building
+- Templates automatically adapt based on available_modules context
+- Database connections are managed through context processors
+- Authentication state is globally available when auth module is loaded
+- Modules can extend base templates with their own nav_links blocks
+
+CUSTOMIZATION:
+-------------
+
+To add new modules:
+1. Create route function in library/routes.py
+2. Add module name to ROUTE_MODULES registry
+3. Create necessary templates in templates/ folder
+4. Update this MODULES.txt file
+
+DEPENDENCIES:
+------------
+
+- Flask 3.1.2+
+- Werkzeug 3.1.0+
+- bcrypt 4.1.2 (for auth module)
+- python-dotenv 1.0.0
+
+Last Updated: October 28, 2025

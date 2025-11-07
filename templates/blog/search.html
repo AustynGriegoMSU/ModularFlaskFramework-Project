@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('blog_home') }}">Blog</a>
+</li>
+{% if 'auth' in available_modules and current_user and current_user.username != 'Guest' %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('blog_write') }}">Write</a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block title %}{{ site_name }} - Search Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Search Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('blog_home') }}">Blog</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Search</li>
+                </ol>
+            </nav>
+            
+            <!-- Search Form -->
+            <div class="d-flex align-items-center mb-3">
+                <h1 class="h2 me-3 mb-0">
+                    <i class="bi bi-search me-2"></i>Search Posts
+                </h1>
+                <div class="flex-grow-1" style="max-width: 500px;">
+                    <form method="GET" class="input-group">
+                        <input type="text" 
+                               class="form-control" 
+                               name="q" 
+                               value="{{ query }}" 
+                               placeholder="Search posts, categories, tags..." 
+                               autofocus>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Info -->
+            {% if query %}
+            <p class="text-muted mb-4">
+                {% if posts %}
+                    {{ posts | length }} result{% if posts | length != 1 %}s{% endif %} found for "<strong>{{ query }}</strong>"
+                {% else %}
+                    No results found for "<strong>{{ query }}</strong>"
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if query %}
+        {% if posts %}
+            <!-- Search Results -->
+            <div class="row">
+                {% for post in posts %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <img src="{{ post.featured_image or '/static/placeholder-blog.jpg' }}" 
+                             class="card-img-top" style="height: 200px; object-fit: cover;" alt="Post image">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-primary me-2">{{ post.category or 'Uncategorized' }}</span>
+                                <small class="text-muted">{{ post.date }}</small>
+                            </div>
+                            <h5 class="card-title">
+                                <a href="{{ url_for('blog_post', post_id=post.id) }}" class="text-decoration-none">
+                                    {{ post.title }}
+                                </a>
+                            </h5>
+                            <p class="card-text flex-grow-1">
+                                {% if post.highlight %}
+                                    {{ post.highlight }}...
+                                {% else %}
+                                    {{ post.excerpt }}
+                                {% endif %}
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <small class="text-muted">by {{ post.author }}</small>
+                                    <div class="text-muted small">
+                                        <i class="bi bi-eye me-1"></i>{{ post.views or 0 }}
+                                        <i class="bi bi-chat ms-2 me-1"></i>{{ post.comments or 0 }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Results -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                        <h3 class="text-muted mt-3">No results found</h3>
+                        <p class="text-muted mb-4">Try different keywords or browse our categories.</p>
+                        
+                        <!-- Search Suggestions -->
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <h5 class="text-muted mb-3">Search Suggestions:</h5>
+                                <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                                    <a href="{{ url_for('blog_search') }}?q=python" class="badge bg-light text-dark text-decoration-none p-2">python</a>
+                                    <a href="{{ url_for('blog_search') }}?q=tutorial" class="badge bg-light text-dark text-decoration-none p-2">tutorial</a>
+                                    <a href="{{ url_for('blog_search') }}?q=javascript" class="badge bg-light text-dark text-decoration-none p-2">javascript</a>
+                                    <a href="{{ url_for('blog_search') }}?q=web development" class="badge bg-light text-dark text-decoration-none p-2">web development</a>
+                                    <a href="{{ url_for('blog_search') }}?q=database" class="badge bg-light text-dark text-decoration-none p-2">database</a>
+                                </div>
+                                
+                                <h6 class="text-muted mb-3">Or browse by category:</h6>
+                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                    <a href="{{ url_for('blog_category', category_name='programming') }}" class="btn btn-outline-primary btn-sm">Programming</a>
+                                    <a href="{{ url_for('blog_category', category_name='web-development') }}" class="btn btn-outline-primary btn-sm">Web Development</a>
+                                    <a href="{{ url_for('blog_category', category_name='tutorials') }}" class="btn btn-outline-primary btn-sm">Tutorials</a>
+                                    <a href="{{ url_for('blog_category', category_name='database') }}" class="btn btn-outline-primary btn-sm">Database</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Search Landing Page -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="py-5">
+                    <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                    <h3 class="text-muted mt-3 mb-4">What are you looking for?</h3>
+                    
+                    <!-- Popular Searches -->
+                    <div class="mb-4">
+                        <h5 class="text-muted mb-3">Popular Searches:</h5>
+                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <a href="{{ url_for('blog_search') }}?q=python beginner" class="badge bg-light text-dark text-decoration-none p-2">Python for Beginners</a>
+                            <a href="{{ url_for('blog_search') }}?q=web development tips" class="badge bg-light text-dark text-decoration-none p-2">Web Development Tips</a>
+                            <a href="{{ url_for('blog_search') }}?q=database design" class="badge bg-light text-dark text-decoration-none p-2">Database Design</a>
+                            <a href="{{ url_for('blog_search') }}?q=javascript tutorial" class="badge bg-light text-dark text-decoration-none p-2">JavaScript Tutorial</a>
+                            <a href="{{ url_for('blog_search') }}?q=api development" class="badge bg-light text-dark text-decoration-none p-2">API Development</a>
+                            <a href="{{ url_for('blog_search') }}?q=best practices" class="badge bg-light text-dark text-decoration-none p-2">Best Practices</a>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="mb-4">
+                        <h5 class="text-muted mb-3">Browse by Category:</h5>
+                        <div class="row justify-content-center">
+                            <div class="col-auto">
+                                <a href="{{ url_for('blog_category', category_name='programming') }}" class="btn btn-outline-primary m-1">
+                                    <i class="bi bi-code-square me-2"></i>Programming
+                                </a>
+                                <a href="{{ url_for('blog_category', category_name='web-development') }}" class="btn btn-outline-primary m-1">
+                                    <i class="bi bi-globe me-2"></i>Web Development
+                                </a>
+                                <a href="{{ url_for('blog_category', category_name='tutorials') }}" class="btn btn-outline-primary m-1">
+                                    <i class="bi bi-book me-2"></i>Tutorials
+                                </a>
+                                <a href="{{ url_for('blog_category', category_name='database') }}" class="btn btn-outline-primary m-1">
+                                    <i class="bi bi-database me-2"></i>Database
+                                </a>
+                                <a href="{{ url_for('blog_category', category_name='reviews') }}" class="btn btn-outline-primary m-1">
+                                    <i class="bi bi-star me-2"></i>Reviews
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Posts -->
+                    <div class="text-center">
+                        <p class="text-muted">Or check out our <a href="{{ url_for('blog_home') }}" class="text-decoration-none">latest posts</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Back to Blog -->
+    <div class="text-center mt-5 pt-4 border-top">
+        <a href="{{ url_for('blog_home') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to All Posts
+        </a>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.badge.text-dark:hover {
+    background-color: var(--bs-primary) !important;
+    color: white !important;
+}
+
+/* Highlight search terms */
+.highlight {
+    background-color: yellow;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+</style>
+
+<script>
+// Auto-focus search input
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="q"]');
+    if (searchInput && !searchInput.value) {
+        searchInput.focus();
+    }
+});
+</script>
+{% endblock %}

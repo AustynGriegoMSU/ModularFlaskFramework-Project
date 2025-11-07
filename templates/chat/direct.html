@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ safe_url_for('chat_home') }}">Chat Rooms</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ safe_url_for('direct_messages') }}">Direct Messages</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card welcome-card">
+                <div class="card-body">
+                    <h2><i class="fas fa-envelope"></i> Direct Messages</h2>
+                    <p class="mb-0">Private conversations with other users</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Conversations List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Conversations</h5>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> New Message
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% for conversation in conversations %}
+                    <div class="d-flex align-items-center p-3 border-bottom">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="position-relative">
+                                <i class="fas fa-user-circle fs-2 text-primary"></i>
+                                {% if conversation.online %}
+                                <span class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 12px; height: 12px;"></span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="mb-1">{{ conversation.username }}</h6>
+                                <small class="text-muted">{{ conversation.timestamp }}</small>
+                            </div>
+                            <p class="mb-1 text-muted">{{ conversation.last_message }}</p>
+                        </div>
+                        <div class="flex-shrink-0 ms-3">
+                            {% if conversation.unread_count > 0 %}
+                            <span class="badge bg-primary rounded-pill">{{ conversation.unread_count }}</span>
+                            {% endif %}
+                            <a href="#" class="btn btn-outline-primary btn-sm ms-2">
+                                <i class="fas fa-comment"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if not conversations %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments text-muted fs-1 mb-3"></i>
+                        <h5 class="text-muted">No conversations yet</h5>
+                        <p class="text-muted">Start a conversation with someone!</p>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Start First Conversation
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

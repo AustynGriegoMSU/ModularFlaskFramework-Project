@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ config.SITE_NAME }}{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Theme CSS - Must load AFTER Bootstrap to override styles -->
+    {% set theme = config.THEME or 'light-professional' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename=theme + '.css') }}?v={{ config.get('CACHE_BUSTER', '1.0') }}">
+    
+    <!-- Additional Head Content -->
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    {% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ safe_url_for('dashboard') or safe_url_for('index') or '/' }}">
+                {{ config.SITE_NAME }}
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ safe_url_for('dashboard') or safe_url_for('index') or '/' }}">Home</a>
+                    </li>
+                    {% block nav_links %}{% endblock %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if 'auth' in available_modules %}
+                        {% if current_user and current_user.username and current_user.username != 'Guest' %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle"></i> {{ current_user.username }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ safe_url_for('profile') }}">
+                                        <i class="fas fa-user"></i> Profile
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ safe_url_for('dashboard') or safe_url_for('index') or '/' }}">
+                                        <i class="fas fa-tachometer-alt"></i> Home
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ safe_url_for('settings') }}">
+                                        <i class="fas fa-cog"></i> Settings
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{{ safe_url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <!-- Quick Logout Button -->
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" href="{{ safe_url_for('logout') }}" title="Logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ safe_url_for('login') }}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ safe_url_for('register') }}">Register</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% block footer %}
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; {{ current_year or "2025" }} {{ config.SITE_NAME }}. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>Built with Flask & Bootstrap</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('blog_home') }}">Blog</a>
+</li>
+{% if 'auth' in available_modules and current_user and current_user.username != 'Guest' %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('blog_write') }}">Write</a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block title %}{{ site_name }} - {{ category.title() }} Posts{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('blog_home') }}">Blog</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ category.title() }}</li>
+                </ol>
+            </nav>
+            <h1 class="display-6 mb-0">
+                <i class="bi bi-folder-open me-2"></i>{{ category.title() }} Posts
+            </h1>
+            <p class="text-muted">{{ posts | length }} posts in this category</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('blog_home') }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>All Posts
+            </a>
+        </div>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="row">
+        {% if posts %}
+            {% for post in posts %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <img src="{{ post.featured_image or '/static/placeholder-blog.jpg' }}" 
+                         class="card-img-top" style="height: 200px; object-fit: cover;" alt="Post image">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-primary me-2">{{ category.title() }}</span>
+                            <small class="text-muted">{{ post.date }}</small>
+                        </div>
+                        <h5 class="card-title">
+                            <a href="{{ url_for('blog_post', post_id=post.id) }}" class="text-decoration-none">
+                                {{ post.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text flex-grow-1">{{ post.excerpt }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <small class="text-muted">by {{ post.author }}</small>
+                                <div class="text-muted small">
+                                    <i class="bi bi-eye me-1"></i>{{ post.views }}
+                                    <i class="bi bi-chat ms-2 me-1"></i>{{ post.comments }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-folder text-muted" style="font-size: 4rem;"></i>
+                    <h3 class="text-muted mt-3">No posts in {{ category.title() }}</h3>
+                    <p class="text-muted">Check back later for new content in this category.</p>
+                    <a href="{{ url_for('blog_home') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Browse All Posts
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if posts | length > 9 %}
+    <nav aria-label="Posts pagination" class="mt-5">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+            <li class="page-item active">
+                <span class="page-link">1</span>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
