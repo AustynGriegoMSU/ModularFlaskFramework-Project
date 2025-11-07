@@ -1,0 +1,363 @@
+/*
+  Space Animated Theme - space-animated.css
+  - Lightweight, GPU-friendly background animations:
+    * layered nebula gradients
+    * 3 starfield layers with different parallax speeds
+    * occasional shooting star simulated with moving gradient
+  - Respects prefers-reduced-motion
+  - Use by setting config.THEME = 'space-animated' (base template appends .css)
+
+  Notes: Keep decorative elements pointer-events: none so UI remains interactive.
+*/
+
+:root{
+  --space-bg-1: #030218; /* deepest space */
+  --space-bg-2: #071029; /* mid tone */
+  --nebula-1: rgba(110,43,255,0.12);
+  --nebula-2: rgba(0,200,255,0.08);
+  --nebula-3: rgba(255,64,129,0.06);
+  --star-color: rgba(255,255,255,0.95);
+  --muted-text: rgba(230,245,255,0.9);
+  --accent: #7de2ff;
+}
+
+/* Base page look */
+html,body{
+  height:100%;
+}
+body{
+  color:var(--muted-text);
+  background-color:var(--space-bg-1);
+  background-image:
+    radial-gradient(circle at 10% 20%, var(--nebula-1), transparent 18%),
+    radial-gradient(circle at 85% 75%, var(--nebula-2), transparent 20%),
+    radial-gradient(circle at 60% 30%, var(--nebula-3), transparent 16%),
+    linear-gradient(180deg,var(--space-bg-1),var(--space-bg-2));
+  background-attachment: fixed;
+  background-size: cover, cover, cover, cover;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Ensure content sits above decorative layers */
+body > * { position: relative; z-index: 2; }
+
+/* Decorative starfield layers via pseudo elements */
+body::before,
+body::after{
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity, background-position;
+}
+
+/* Far stars: subtle, very slow drift (less perceived motion) */
+body::before{
+  background-image:
+    radial-gradient(#ffffff 0.8px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.9) 0.6px, transparent 1px);
+  background-size: 220px 220px, 420px 420px;
+  opacity: 0.45;
+  transform: translateZ(0);
+  /* much slower to reduce constant motion */
+  animation: star-drift-slow 240s linear infinite;
+}
+
+/* Near stars & subtle twinkle (slower drift, twinkle randomized below) */
+body::after{
+  background-image:
+    radial-gradient(#ffffff 0.9px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.85) 0.6px, transparent 1px);
+  /* SOFT-BLEND GRID preset: larger spacing, low opacity and a tiny blur so the dots read as texture */
+  background-size: 120px 120px, 260px 260px;
+  opacity: 0.28;
+  mix-blend-mode: screen;
+  filter: blur(0.6px) saturate(110%);
+  animation: star-drift-fast 120s linear infinite, star-twinkle 10s ease-in-out infinite;
+}
+
+/* Shooting stars using an extra fixed positioned pseudo-layer (accessible fallback) */
+.space-shooting {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Create multiple transient shooting streaks with background gradients.
+   For more randomness, support child .shoot spans with varying delays, positions and durations.
+   Add markup: <div class="space-shooting" aria-hidden="true"><span class="shoot"></span>... </div>
+*/
+.space-shooting::before,
+.space-shooting::after{
+  /* keep the gentle large streaks for subtle movement */
+  content: "";
+  position: absolute;
+  top: 10%;
+  left: -20%;
+  width: 60vmax;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 45%, rgba(125,226,255,0.9) 55%, transparent 100%);
+  transform: rotate(-12deg) translateX(0);
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(125,226,255,0.25));
+  animation: shooting-1 18s linear infinite;
+}
+.space-shooting::after{
+  top: 60%;
+  left: -30%;
+  height: 1.2px;
+  animation: shooting-2 24s linear infinite;
+}
+
+/* Randomized small shooting stars using child spans. They should be sparse and varied. */
+.space-shooting .shoot{
+  position: absolute;
+  width: 70vmax;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.95) 40%, rgba(125,226,255,0.95) 60%, transparent 100%);
+  transform: rotate(-10deg) translateX(0);
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(125,226,255,0.18));
+  animation-name: shooting-random;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+/* Staggered variations for up to 8 shoots if present; these add randomness */
+.space-shooting .shoot:nth-child(1){ top: 8%; left: -40%; animation-duration: 9s; animation-delay: 1s; }
+.space-shooting .shoot:nth-child(2){ top: 22%; left: -30%; animation-duration: 13s; animation-delay: 5s; transform: rotate(-6deg); }
+.space-shooting .shoot:nth-child(3){ top: 44%; left: -50%; animation-duration: 11s; animation-delay: 12s; transform: rotate(-14deg); }
+.space-shooting .shoot:nth-child(4){ top: 66%; left: -35%; animation-duration: 15s; animation-delay: 20s; transform: rotate(-9deg); }
+.space-shooting .shoot:nth-child(5){ top: 30%; left: -60%; animation-duration: 10s; animation-delay: 27s; transform: rotate(-11deg); }
+.space-shooting .shoot:nth-child(6){ top: 52%; left: -20%; animation-duration: 18s; animation-delay: 32s; transform: rotate(-7deg); }
+.space-shooting .shoot:nth-child(7){ top: 75%; left: -70%; animation-duration: 22s; animation-delay: 48s; transform: rotate(-13deg); }
+.space-shooting .shoot:nth-child(8){ top: 12%; left: -80%; animation-duration: 12s; animation-delay: 55s; transform: rotate(-5deg); }
+
+/* Navigation and footer adjustments to blend with theme */
+.navbar, footer {
+  background: transparent !important;
+  border: none !important;
+}
+.navbar .navbar-brand, .navbar .nav-link, footer { color: var(--muted-text) !important; }
+
+/* Buttons & accents */
+.btn-outline-primary {
+  color: var(--accent);
+  border-color: rgba(125,226,255,0.35);
+}
+.btn-primary { background: linear-gradient(90deg, #5ee7ff, #7de2ff); border: none; }
+
+/* Links */
+a { color: var(--accent); }
+a:hover { color: #bff7ff; text-decoration: underline; }
+
+/* Utility: subtle glass panel for content when needed */
+.space-panel{
+  background: rgba(10,14,20,0.48);
+  border: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px) saturate(120%);
+  box-shadow: 0 6px 30px rgba(2,6,20,0.6);
+}
+
+/* Keyframes */
+@keyframes star-drift-slow{
+  from { background-position: 0 0, 0 0; }
+  /* smaller range to reduce perceived motion */
+  to   { background-position: 800px 400px, -800px -400px; }
+}
+@keyframes star-drift-fast{
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: -600px 400px, 600px -400px; }
+}
+@keyframes star-twinkle{
+  0%,100% { opacity: 0.9; }
+  50% { opacity: 0.6; }
+}
+@keyframes shooting-1{
+  0%   { transform: translateX(0) rotate(-12deg); opacity: 0; }
+  6%   { opacity: 1; }
+  12%  { transform: translateX(130vw) rotate(-12deg); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes shooting-2{
+  0%   { transform: translateX(0) rotate(-8deg); opacity: 0; }
+  8%   { opacity: 1; }
+  18%  { transform: translateX(140vw) rotate(-8deg); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes shooting-random{
+  0%   { transform: translateX(0); opacity: 0; }
+  5%   { opacity: 1; }
+  20%  { transform: translateX(120vw); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Accessibility: reduce/stop motion when requested */
+@media (prefers-reduced-motion: reduce){
+  body::before, body::after, .space-shooting::before, .space-shooting::after {
+    animation: none !important;
+    opacity: 0.8 !important;
+  }
+}
+
+/* Small screens: reduce heavy background sizes to save GPU */
+@media (max-width: 600px){
+  body::before { background-size: 160px 160px, 300px 300px; }
+  /* On small screens keep grid subtle but avoid too-small dot spacing */
+  body::after { background-size: 80px 80px, 160px 160px; }
+}
+
+/* Make sure form controls, cards, and common UI blocks match the cosmic theme */
+.card {
+  background: linear-gradient(180deg, rgba(12,16,30,0.66), rgba(6,8,20,0.56));
+  border: 1px solid rgba(125,226,255,0.06);
+  box-shadow: 0 8px 30px rgba(2,6,20,0.6), 0 0 18px rgba(125,226,255,0.03) inset;
+  color: var(--muted-text);
+  transition: box-shadow 220ms ease, transform 220ms ease;
+  overflow: hidden;
+}
+.card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 14px 50px rgba(2,6,20,0.7), 0 0 28px rgba(125,226,255,0.06) inset;
+}
+.card .card-body {
+  background-image: radial-gradient(circle at 10% 20%, rgba(110,43,255,0.02), transparent 20%);
+  padding: 1rem 1.25rem;
+}
+.card .card-header{
+  background: linear-gradient(90deg, rgba(125,226,255,0.03), rgba(255,255,255,0.01));
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Forms, inputs, selects */
+.form-control, .form-select, textarea {
+  background: rgba(6,10,18,0.55);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--muted-text);
+  box-shadow: none;
+}
+.form-control:focus, .form-select:focus, textarea:focus{
+  outline: none;
+  box-shadow: 0 0 10px rgba(125,226,255,0.06);
+  border-color: rgba(125,226,255,0.28);
+}
+
+/* Lists and list groups */
+.list-group-item {
+  background: rgba(10,14,22,0.48);
+  border: 1px solid rgba(255,255,255,0.03);
+  color: var(--muted-text);
+}
+.list-group-item.active {
+  background: linear-gradient(90deg, rgba(125,226,255,0.06), rgba(110,43,255,0.04));
+  border-color: rgba(125,226,255,0.12);
+  color: #001b22;
+}
+
+/* Modals and dropdowns */
+.modal-content, .dropdown-menu {
+  background: linear-gradient(180deg, rgba(8,12,20,0.78), rgba(6,8,18,0.64));
+  border: 1px solid rgba(255,255,255,0.03);
+  color: var(--muted-text);
+  box-shadow: 0 10px 40px rgba(2,6,20,0.7);
+}
+
+/* Tables */
+.table {
+  color: var(--muted-text);
+}
+.table thead th {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.table tbody tr {
+  background: linear-gradient(180deg, rgba(6,10,18,0.48), rgba(6,10,18,0.36));
+}
+
+/* Badges & small accents */
+.badge {
+  background: rgba(125,226,255,0.12);
+  color: #e8fbff;
+  border: 1px solid rgba(125,226,255,0.06);
+}
+
+/* Ensure panels helper still looks good */
+.space-panel{
+  background: linear-gradient(180deg, rgba(10,14,20,0.54), rgba(6,8,18,0.42));
+  border: 1px solid rgba(125,226,255,0.04);
+  box-shadow: 0 8px 30px rgba(2,6,20,0.6), 0 0 14px rgba(125,226,255,0.02) inset;
+}
+
+/* Subtle neon outline for primary actions inside cards */
+.card .btn-primary {
+  box-shadow: 0 8px 20px rgba(125,226,255,0.08);
+}
+
+/* Reduce transforms/animations for reduced-motion users */
+@media (prefers-reduced-motion: reduce){
+  .card, .card:hover { transform: none !important; transition: none !important; }
+  .form-control:focus { box-shadow: none !important; }
+}
+
+/* Minor helpers for contrast */
+.text-muted { color: rgba(200,220,240,0.7) !important; }
+
+/* End of theme */
+
+/* ----- Banner / Footer / Hero blending -----
+   Make common large bars (footer, header banners, hero sections, alerts)
+   less visually heavy so they blend with the space background.
+   We target Bootstrap's .bg-dark plus common banner/hero class names.
+*/
+.bg-dark, footer.bg-dark, .site-banner, .banner, .hero, .masthead {
+  background: linear-gradient(180deg, rgba(6,10,18,0.40), rgba(6,8,16,0.24)) !important;
+  color: var(--muted-text) !important;
+  border: none !important;
+  border-top: 1px solid rgba(125,226,255,0.02) !important;
+  backdrop-filter: blur(6px) saturate(110%);
+  box-shadow: none !important;
+  opacity: 0.94;
+}
+
+/* Footer specific tuning to reduce prominence */
+footer.bg-dark {
+  background: linear-gradient(180deg, rgba(6,8,16,0.28), rgba(6,8,16,0.18)) !important;
+  color: rgba(220,235,245,0.75) !important;
+  padding-top: 1.25rem !important;
+  padding-bottom: 1.25rem !important;
+}
+
+/* Make site-wide alert banners translucent and less obtrusive */
+.alert {
+  background: linear-gradient(180deg, rgba(20,24,36,0.44), rgba(10,12,20,0.36));
+  color: var(--muted-text) !important;
+  border: 1px solid rgba(125,226,255,0.04) !important;
+  box-shadow: 0 6px 20px rgba(2,6,20,0.5);
+}
+.alert-info { background: linear-gradient(180deg, rgba(5,18,28,0.44), rgba(6,12,20,0.36)); }
+.alert-warning { background: linear-gradient(180deg, rgba(40,34,20,0.36), rgba(36,28,18,0.28)); }
+.alert-danger { background: linear-gradient(180deg, rgba(48,14,14,0.32), rgba(36,8,8,0.26)); }
+
+/* Hero headings: ensure they don't clash; use subtle glow rather than block */
+.hero, .masthead {
+  color: var(--muted-text);
+}
+.hero h1, .masthead h1 {
+  text-shadow: 0 2px 18px rgba(10,14,20,0.7);
+}
+
+/* Reduce opacity & remove heavy borders for small screens too */
+@media (max-width: 768px){
+  .bg-dark, footer.bg-dark, .site-banner, .banner, .hero, .masthead { opacity: 0.98; }
+}
+
+/* Accessibility: avoid heavy visual effects for reduced motion and sensitivity */
+@media (prefers-reduced-motion: reduce){
+  .bg-dark, footer.bg-dark, .site-banner, .banner, .hero, .masthead {
+    backdrop-filter: none !important;
+    opacity: 0.98 !important;
+  }
+  .alert { box-shadow: none !important; }
+}

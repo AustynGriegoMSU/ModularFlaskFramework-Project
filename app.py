@@ -8,8 +8,8 @@ from library import create_app
 app = create_app(
         modules=['blog', 'chat', 'dashboard', 'database', 'auth'], 
         config={
-            'THEME': 'dark-modern',
-            'DASHBOARD_TYPE': 'chat'  
+            'THEME': 'space-animated',
+            'DASHBOARD_TYPE': 'default'  
         },
         site_name='Project 123'
     )
