@@ -18,7 +18,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
+            <a class="navbar-brand" href="{{ safe_url_for('index') }}">
                 <i class="fas fa-cube"></i> Flask Framework
             </a>
             
@@ -29,13 +29,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
+                        <a class="nav-link active" href="{{ safe_url_for('index') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                        <a class="nav-link" href="{{ safe_url_for('about') }}">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                        <a class="nav-link" href="{{ safe_url_for('contact') }}">Contact</a>
                     </li>
                 </ul>
                 
@@ -46,23 +46,23 @@
                                 <i class="fas fa-user-circle"></i> {{ current_user.username }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                <li><a class="dropdown-item" href="{{ safe_url_for('dashboard') }}">
                                     <i class="fas fa-tachometer-alt"></i> Dashboard
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                <li><a class="dropdown-item text-danger" href="{{ safe_url_for('logout') }}">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
+                            <a class="nav-link" href="{{ safe_url_for('login') }}">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">
+                            <a class="nav-link" href="{{ safe_url_for('register') }}">
                                 <i class="fas fa-user-plus"></i> Register
                             </a>
                         </li>
@@ -95,14 +95,14 @@
                     <p class="lead">Build Flask applications instantly with reusable modules. Pick and choose the functionality you need.</p>
                     <div class="mt-4">
                         {% if current_user %}
-                            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg me-3">
+                            <a href="{{ safe_url_for('dashboard') }}" class="btn btn-light btn-lg me-3">
                                 <i class="fas fa-tachometer-alt"></i> Go to Dashboard
                             </a>
                         {% else %}
-                            <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-3">
+                            <a href="{{ safe_url_for('register') }}" class="btn btn-light btn-lg me-3">
                                 <i class="fas fa-rocket"></i> Get Started
                             </a>
-                            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                            <a href="{{ safe_url_for('login') }}" class="btn btn-outline-light btn-lg">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         {% endif %}
@@ -137,20 +137,22 @@
             
             <div class="col-md-4 mb-4">
                 <div class="card h-100 text-center border-0 shadow-sm">
+                    <a href="{{ safe_url_for('chat_home') }}" class="stretched-link" aria-hidden="true"></a>
                     <div class="card-body">
-                        <i class="fas fa-database text-success" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Database</h5>
-                        <p class="card-text">SQLite database with user management, profiles, and extensible table structure.</p>
+                        <i class="fas fa-comments text-success" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Chat</h5>
+                        <p class="card-text">Explore sample chat rooms and try sending messages via the API (demo only).</p>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4 mb-4">
                 <div class="card h-100 text-center border-0 shadow-sm">
+                    <a href="{{ safe_url_for('blog_home') }}" class="stretched-link" aria-hidden="true"></a>
                     <div class="card-body">
-                        <i class="fas fa-tachometer-alt text-info" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Dashboard</h5>
-                        <p class="card-text">User dashboard with statistics, activity feeds, and profile management.</p>
+                        <i class="fas fa-newspaper text-info" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Blog</h5>
+                        <p class="card-text">Read sample posts, search by category, and try the write flow (requires auth).</p>
                     </div>
                 </div>
             </div>

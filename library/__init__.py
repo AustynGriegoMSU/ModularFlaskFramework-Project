@@ -4,8 +4,8 @@ Contains reusable modules for rapid Flask development
 """
 
 from flask import Flask, url_for
-from .auth import Auth, auth
-from .database import DatabaseManager, db
+from .modules.auth import Auth, auth
+from .modules.database import DatabaseManager, db
 from .routes import ROUTE_MODULES
 
 # Module dependency definitions
@@ -141,54 +141,54 @@ def create_app(modules=None, config=None, site_name=None):
     print("=" * 40)
     
     # Initialize selected modules
-    if modules:
-        # Database must be loaded first if needed
-        if 'database' in modules:
-            app.db = db
-            print("✅ Database module loaded")
-            
-        # Always provide module info and safe URL building
-        @app.context_processor
-        def inject_helpers():
-            def safe_url_for(endpoint, **values):
-                """Safely build URL, return '#' if route doesn't exist"""
-                try:
-                    return url_for(endpoint, **values)
-                except:
-                    return '#'
-            
-            result = {
-                'available_modules': modules,
-                'safe_url_for': safe_url_for,
-                'current_user': None
-            }
-            
-            # Add current_user if auth module is loaded
-            if 'auth' in modules:
-                try:
-                    user = auth.get_current_user()
-                    # If no user or user is None, provide Guest fallback
-                    result['current_user'] = user if user else {'username': 'Guest'}
-                except Exception as e:
-                    result['current_user'] = {'username': 'Guest'}
-            else:
-                result['current_user'] = {'username': 'Guest'}
-            
-            return result
-        
+    # Database must be loaded first if needed
+    if 'database' in modules:
+        app.db = db
+        print("✅ Database module loaded")
+
+    # Always provide module info and safe URL building so templates can
+    # safely reference module routes even if those modules are not enabled.
+    @app.context_processor
+    def inject_helpers():
+        def safe_url_for(endpoint, **values):
+            """Safely build URL, return '#' if route doesn't exist"""
+            try:
+                return url_for(endpoint, **values)
+            except:
+                return '#'
+
+        result = {
+            'available_modules': modules,
+            'safe_url_for': safe_url_for,
+            'current_user': None
+        }
+
+        # Add current_user if auth module is loaded
         if 'auth' in modules:
-            auth.db = db
-            print("✅ Auth module loaded")
-        
-        # Register routes for each module (skip backend modules)
-        for module_name in modules:
-            if module_name in BACKEND_MODULES:
-                print(f"✅ {module_name.title()} backend module loaded")
-            elif module_name in ROUTE_MODULES:
-                ROUTE_MODULES[module_name](app)
-                print(f"✅ {module_name.title()} routes registered")
-            else:
-                print(f"⚠️  Warning: {module_name} module not found in route registry")
+            try:
+                user = auth.get_current_user()
+                # If no user or user is None, provide Guest fallback
+                result['current_user'] = user if user else {'username': 'Guest'}
+            except Exception:
+                result['current_user'] = {'username': 'Guest'}
+        else:
+            result['current_user'] = {'username': 'Guest'}
+
+        return result
+
+    if 'auth' in modules:
+        auth.db = db
+        print("✅ Auth module loaded")
+
+    # Register routes for each module (skip backend modules)
+    for module_name in modules:
+        if module_name in BACKEND_MODULES:
+            print(f"✅ {module_name.title()} backend module loaded")
+        elif module_name in ROUTE_MODULES:
+            ROUTE_MODULES[module_name](app)
+            print(f"✅ {module_name.title()} routes registered")
+        else:
+            print(f"⚠️  Warning: {module_name} module not found in route registry")
     
     return app
 

@@ -79,6 +79,26 @@ class DatabaseManager:
             ''')
             
             conn.commit()
+
+            # Blog posts table (optional for blog module)
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS posts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    author TEXT,
+                    category TEXT,
+                    tags TEXT,
+                    featured_image TEXT,
+                    views INTEGER DEFAULT 0,
+                    comments INTEGER DEFAULT 0,
+                    published BOOLEAN DEFAULT 1,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+
+            conn.commit()
     
     def create_user(self, username, email, password_hash):
         """Create a new user"""
@@ -247,6 +267,52 @@ class DatabaseManager:
         """Close database connection (for cleanup)"""
         # Using context manager, so no persistent connection to close
         pass
+
+    # Simple blog helpers
+    def create_post(self, title, content, author=None, category=None, tags=None, featured_image=None, published=True):
+        tags_str = ','.join(tags) if isinstance(tags, (list, tuple)) else (tags or '')
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO posts (title, content, author, category, tags, featured_image, published)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (title, content, author, category, tags_str, featured_image, 1 if published else 0))
+                conn.commit()
+                return cursor.lastrowid
+        except Exception as e:
+            print(f"Create post error: {e}")
+            return None
+
+    def get_posts(self, limit=20, offset=0):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT * FROM posts WHERE published = 1
+                ORDER BY created_at DESC
+                LIMIT ? OFFSET ?
+            ''', (limit, offset))
+            return [dict(row) for row in cursor.fetchall()]
+
+    def get_post_by_id(self, post_id):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT * FROM posts WHERE id = ? AND published = 1
+            ''', (post_id,))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
+    def search_posts(self, query, limit=20):
+        search_term = f"%{query}%"
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT * FROM posts WHERE published = 1 AND (title LIKE ? OR content LIKE ? OR tags LIKE ?)
+                ORDER BY created_at DESC
+                LIMIT ?
+            ''', (search_term, search_term, search_term, limit))
+            return [dict(row) for row in cursor.fetchall()]
 
 # Global database instance
 db = DatabaseManager()

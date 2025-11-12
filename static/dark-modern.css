@@ -5,8 +5,8 @@ Professional dark theme with blue accents
 */
 
 :root {
-    --primary-color: #007bff;
-    --primary-dark: #0056b3;
+    --primary-color: #000000;
+    --primary-dark: #605e5e;
     --secondary-color: #6c757d;
     --success-color: #28a745;
     --warning-color: #ffc107;
@@ -84,15 +84,22 @@ body {
 }
 
 /* Buttons */
+.btn {
+    color: var(--text-primary) !important;
+}
+
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
+    color: var(--text-primary) !important;
     transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus {
     background-color: var(--primary-dark);
     border-color: var(--primary-dark);
+    color: var(--text-primary) !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
@@ -102,10 +109,27 @@ body {
     border-color: var(--border-color);
 }
 
-.btn-outline-secondary:hover {
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
     background-color: var(--bg-tertiary);
     border-color: var(--text-secondary);
     color: var(--text-primary);
+}
+
+/* Make sure button focus is visible for keyboard users */
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.35) !important;
+}
+
+/* High-contrast variant for danger/success/info */
+.btn-danger, .btn-success, .btn-info {
+    color: var(--text-primary) !important;
+}
+
+/* If a button used the primary color (which in this theme is dark), ensure text stays readable */
+.btn[style*="background-color: var(--primary-color)"] {
+    color: var(--text-primary) !important;
 }
 
 /* Forms */

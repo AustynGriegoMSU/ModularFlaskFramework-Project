@@ -6,12 +6,12 @@ Uses the modular Flask framework from library/
 from library import create_app
 
 app = create_app(
-        modules=['blog', 'chat', 'dashboard', 'database', 'auth'], 
+        modules=['chat', 'dashboard', 'database', 'auth'], 
         config={
-            'THEME': 'space-animated',
-            'DASHBOARD_TYPE': 'default'  
+            'THEME': 'dark-modern',
+            'DASHBOARD_TYPE': 'chat'  
         },
-        site_name='Project 123'
+        site_name='Project Chatter'
     )
 
 # Debug route to check theme and dashboard

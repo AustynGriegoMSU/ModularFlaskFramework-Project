@@ -87,8 +87,7 @@ MODULE FEATURES:
 ✅ Context Processors: Modules inject their data into templates
 ✅ Flexible Navigation: Navbar adapts based on loaded modules
 
-FUTURE MODULES (Planned):
-------------------------
+
 
 5. 'blog' - Blog/Content Management
    ├── Routes: /blog, /blog/post/<id>, /blog/create, /blog/edit/<id>
@@ -100,25 +99,11 @@ FUTURE MODULES (Planned):
    ├── Features: JSON responses, API authentication
    └── Dependencies: auth
 
-7. 'admin' - Admin Panel
-   ├── Routes: /admin, /admin/users, /admin/settings
-   ├── Features: User management, system settings
-   └── Dependencies: auth (admin role required)
 
 8. 'chat' - Real-time Chat
    ├── Routes: /chat, /chat/room/<id>
    ├── Features: WebSocket chat, rooms, message history
    └── Dependencies: auth
-
-9. 'ecommerce' - E-commerce Features
-   ├── Routes: /shop, /cart, /checkout, /orders
-   ├── Features: Product catalog, shopping cart, payment processing
-   └── Dependencies: auth, database
-
-10. 'file_manager' - File Upload/Management
-    ├── Routes: /files, /upload, /download/<id>
-    ├── Features: File upload, download, gallery view
-    └── Dependencies: auth
 
 TECHNICAL NOTES:
 ---------------
