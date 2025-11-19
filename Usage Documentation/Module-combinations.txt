@@ -18,17 +18,7 @@ app = create_app(
     site_name='Creative Portfolio'
 )
 
-# Example 3: Full-Featured Site (All Modules)
-app = create_app(
-    modules=['blog', 'chat', 'gallery', 'dashboard', 'database', 'auth'], 
-    config={
-        'THEME': 'cyberpunk-neon',
-        'DASHBOARD_TYPE': 'blog'  # Choose primary dashboard type
-    },
-    site_name='Full Platform'
-)
-
-# Example 4: Simple Blog Only
+# Example 3: Simple Blog Only
 app = create_app(
     modules=['blog', 'dashboard', 'database', 'auth'], 
     config={
@@ -38,7 +28,7 @@ app = create_app(
     site_name='Simple Blog'
 )
 
-# Example 5: Chat + Blog (Gaming Community)
+# Example 4: Chat + Blog (Gaming Community)
 app = create_app(
     modules=['chat', 'blog', 'dashboard', 'database', 'auth'], 
     config={

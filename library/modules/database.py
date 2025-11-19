@@ -11,10 +11,11 @@ from contextlib import contextmanager
 class DatabaseManager:
     def __init__(self, db_path=None):
         if db_path is None:
-            # Use instance folder for database
-            instance_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance')
+            # Default fallback - use project root instance folder
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            instance_dir = os.path.join(project_root, 'instance')
             os.makedirs(instance_dir, exist_ok=True)
-            self.db_path = os.path.join(instance_dir, 'project_l.db')
+            self.db_path = os.path.join(instance_dir, 'app.db')
         else:
             self.db_path = db_path
         self.init_database()
@@ -314,5 +315,5 @@ class DatabaseManager:
             ''', (search_term, search_term, search_term, limit))
             return [dict(row) for row in cursor.fetchall()]
 
-# Global database instance
-db = DatabaseManager()
+# Global database instance - will be properly initialized by Flask app
+db = None

@@ -16,12 +16,8 @@ MODULE_DEPENDENCIES = {
     'database': [],                 # database is a backend module (no routes)
     'chat': [],                     # chat works standalone (enhanced by auth)
     'blog': ['auth', 'database'],   # blog requires auth and database
-    'forum': ['auth', 'database'],  # forum requires auth and database
-    'ecommerce': ['auth', 'database'], # ecommerce requires auth and database
-    'gallery': ['auth'],            # gallery requires auth for uploads
     'contact': [],                  # contact works standalone
-    'search': [],                   # search is standalone
-    'events': ['auth', 'database'], # events require auth and database
+   
 }
 
 # Backend modules that don't have routes
@@ -106,8 +102,11 @@ def create_app(modules=None, config=None, site_name=None):
         modules = []
     
     # Create Flask app with proper instance folder configuration
-    instance_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance')
-    static_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+    project_root = os.path.dirname(os.path.dirname(__file__))
+    instance_path = os.path.join(project_root, 'instance')
+    static_path = os.path.join(project_root, 'static')
+    
+    # Ensure instance folder exists
     os.makedirs(instance_path, exist_ok=True)
     
     app = Flask(__name__, 
@@ -120,7 +119,7 @@ def create_app(modules=None, config=None, site_name=None):
     app.config.update({
         'SECRET_KEY': 'change-this-in-production',
         'DEBUG': True,
-        'DATABASE_PATH': os.path.join(instance_path, 'project_l.db'),
+                'DATABASE_PATH': os.path.join(instance_path, 'app.db'),
         'THEME': 'light-professional',  # Default theme
         'CACHE_BUSTER': '1.3',  # Increment to force CSS reload
         'SITE_NAME': site_name,  # Site name for templates - no default fallback
@@ -143,7 +142,8 @@ def create_app(modules=None, config=None, site_name=None):
     # Initialize selected modules
     # Database must be loaded first if needed
     if 'database' in modules:
-        app.db = db
+        # Initialize database with Flask app's configured path
+        app.db = DatabaseManager(app.config.get('DATABASE_PATH'))
         print("✅ Database module loaded")
 
     # Always provide module info and safe URL building so templates can
