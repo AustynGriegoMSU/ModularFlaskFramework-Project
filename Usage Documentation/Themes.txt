@@ -1,0 +1,39 @@
+AVAILABLE THEMES: 4
+----------------
+1. 🌟 LIGHT PROFESSIONAL (light-professional.css) DEFAULT
+   ├── Style: Clean, bright, modern professional look
+   ├── Colors: Blues, whites, subtle grays
+   ├── Perfect for: Business apps, corporate dashboards, professional sites
+   ├── Features: Subtle shadows, rounded corners, smooth animations
+   └── Best for: Daytime use, corporate environments
+
+2. 🌙 DARK MODERN (dark-modern.css)
+   ├── Style: Sleek dark theme with blue accents
+   ├── Colors: Dark grays, bright blues, clean whites
+   ├── Perfect for: Developer tools, modern apps, night usage
+   ├── Features: Hover effects, glowing buttons, smooth transitions
+   └── Best for: Reduced eye strain, modern applications
+
+3. 🚀 CYBERPUNK NEON (cyberpunk-neon.css)
+   ├── Style: Futuristic with neon glows and effects
+   ├── Colors: Cyan, magenta, electric blues, dark backgrounds
+   ├── Perfect for: Gaming apps, creative projects, tech demos
+   ├── Features: Glow effects, animations, glitch effects, scanlines
+   └── Best for: Creative projects, gaming, tech showcases
+
+4. 🌌 SPACE ANIMATED (space-animated.css)
+   ├── Style: Atmospheric space scene with nebula gradients and animated starfields
+   ├── Colors: Deep indigo, teal highlights, soft neon accents
+   ├── Perfect for: Creative apps, galleries, portfolio sites, sci-fi projects
+   ├── Features: Layered parallax starfields, subtle twinkling, occasional shooting-star accents
+   ├── Accessibility: Respects prefers-reduced-motion to limit/disable animations
+   └── How to use: Set `config.THEME = 'space-animated'` or pass `{'THEME': 'space-animated'}` to create_app
+
+HOW TO USE DIFFERENT THEMES:
+---------------------------
+In app.py you change the theme in the config to match theme you want to use:
+    1. config={'THEME': 'light-professional'}
+    2. config={'THEME': 'dark-modern'}
+    3. config={'THEME': 'cyberpunk-neon'}
+    4. config={'THEME': 'space-animated'}
+Theme should show in terminal upon running app.py
