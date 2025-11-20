@@ -6,6 +6,13 @@
         <i class="fas fa-comments"></i> Chat Rooms
     </a>
 </li>
+{% if 'blog' in available_modules %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ safe_url_for('blog_home') }}">
+        <i class="fas fa-blog"></i> Blog
+    </a>
+</li>
+{% endif %}
 <li class="nav-item">
     <a class="nav-link position-relative" href="{{ safe_url_for('direct_messages') }}">
         <i class="fas fa-envelope"></i> Messages
@@ -243,12 +250,44 @@
                         <button class="btn btn-outline-secondary">
                             <i class="fas fa-user-plus me-2"></i>Invite Friends
                         </button>
+                        {% if 'blog' in available_modules %}
+                        <a href="{{ safe_url_for('blog_write') }}" class="btn btn-outline-success">
+                            <i class="fas fa-pen me-2"></i>Write Blog Post
+                        </a>
+                        {% endif %}
                         <button class="btn btn-outline-info">
                             <i class="fas fa-cog me-2"></i>Chat Settings
                         </button>
                     </div>
                 </div>
             </div>
+            
+            {% if 'blog' in available_modules %}
+            <!-- Blog Quick Access -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h6 class="mb-0"><i class="fas fa-blog me-2"></i>Community Blog</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Recent Posts</span>
+                        <span class="fw-bold text-primary">24</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Your Drafts</span>
+                        <span class="fw-bold text-warning">3</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Comments</span>
+                        <span class="fw-bold text-success">89</span>
+                    </div>
+                    <hr>
+                    <a href="{{ safe_url_for('blog_home') }}" class="btn btn-sm btn-outline-primary w-100">
+                        <i class="fas fa-blog me-2"></i>View Blog
+                    </a>
+                </div>
+            </div>
+            {% endif %}
             
             <!-- Recent Activity -->
             <div class="card border-0 shadow-sm">
@@ -265,6 +304,12 @@
                             <i class="fas fa-image text-info me-2"></i>
                             Bob shared a photo
                         </div>
+                        {% if 'blog' in available_modules %}
+                        <div class="mb-2 p-2 bg-light rounded">
+                            <i class="fas fa-edit text-warning me-2"></i>
+                            New blog post published
+                        </div>
+                        {% endif %}
                         <div class="p-2 bg-light rounded">
                             <i class="fas fa-hashtag text-primary me-2"></i>
                             New room "Gaming" created

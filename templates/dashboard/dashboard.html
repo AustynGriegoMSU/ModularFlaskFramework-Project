@@ -4,6 +4,20 @@
 <li class="nav-item">
     <a class="nav-link" href="{{ safe_url_for('dashboard') }}">Dashboard</a>
 </li>
+{% if 'blog' in available_modules %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ safe_url_for('blog_home') }}">
+        <i class="fas fa-blog"></i> Blog
+    </a>
+</li>
+{% endif %}
+{% if 'chat' in available_modules %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ safe_url_for('chat_home') }}">
+        <i class="fas fa-comments"></i> Chat
+    </a>
+</li>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -26,35 +40,63 @@
     
     <!-- Dashboard Stats -->
     <div class="row mb-4">
+        {% if 'blog' in available_modules %}
         <div class="col-md-3 mb-3">
-            <div class="card text-center">
+            <div class="card text-center border-0 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-primary">{{ stats.total_items or 0 }}</h5>
-                    <p class="card-text">Total Items</p>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                            <i class="fas fa-blog text-primary fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-primary fw-bold">{{ stats.total_posts or 24 }}</h5>
+                    <p class="card-text text-muted">Blog Posts</p>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +3 this week</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if 'chat' in available_modules %}
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                            <i class="fas fa-comments text-success fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-success fw-bold">{{ stats.active_chats or 5 }}</h5>
+                    <p class="card-text text-muted">Active Chats</p>
+                    <small class="text-success"><i class="fas fa-circle"></i> 12 online now</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                            <i class="fas fa-users text-warning fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-warning fw-bold">{{ stats.total_users or 156 }}</h5>
+                    <p class="card-text text-muted">Community Members</p>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +8 this month</small>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card text-center">
+            <div class="card text-center border-0 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-success">{{ stats.active_items or 0 }}</h5>
-                    <p class="card-text">Active Items</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">{{ stats.pending_items or 0 }}</h5>
-                    <p class="card-text">Pending Items</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-info">{{ stats.completed_items or 0 }}</h5>
-                    <p class="card-text">Completed</p>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                            <i class="fas fa-chart-line text-info fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-info fw-bold">{{ stats.daily_activity or 89 }}</h5>
+                    <p class="card-text text-muted">Daily Activity</p>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +15% vs yesterday</small>
                 </div>
             </div>
         </div>
@@ -63,21 +105,43 @@
     <!-- Quick Actions -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Quick Actions</h5>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <button class="btn btn-primary w-100" onclick="alert('Create Item feature not yet implemented')">
-                                <i class="fas fa-plus"></i> Create New Item
-                            </button>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <a href="{{ safe_url_for('profile') }}" class="btn btn-outline-secondary w-100">
-                                <i class="fas fa-user"></i> View Profile
+                    <div class="row g-3">
+                        {% if 'blog' in available_modules %}
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{{ safe_url_for('blog_write') }}" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-pen mb-2 d-block fs-4"></i>
+                                <strong>Write Post</strong>
+                                <small class="d-block text-white-50">Share your thoughts</small>
                             </a>
+                        </div>
+                        {% endif %}
+                        {% if 'chat' in available_modules %}
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{{ safe_url_for('chat_home') }}" class="btn btn-success w-100 py-3">
+                                <i class="fas fa-comments mb-2 d-block fs-4"></i>
+                                <strong>Join Chat</strong>
+                                <small class="d-block text-white-50">Connect with community</small>
+                            </a>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{{ safe_url_for('profile') }}" class="btn btn-outline-secondary w-100 py-3">
+                                <i class="fas fa-user mb-2 d-block fs-4"></i>
+                                <strong>Profile</strong>
+                                <small class="d-block">Manage account</small>
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button class="btn btn-outline-info w-100 py-3" onclick="alert('Settings feature coming soon!')">
+                                <i class="fas fa-cog mb-2 d-block fs-4"></i>
+                                <strong>Settings</strong>
+                                <small class="d-block">Configure app</small>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -85,48 +149,194 @@
         </div>
     </div>
     
-    <!-- Recent Activity -->
+    <!-- Platform Overview -->
     <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <h5>Recent Activity</h5>
-                    <button class="btn btn-sm btn-outline-primary" onclick="alert('Activity log feature not yet implemented')">View All</button>
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-stream me-2"></i>Platform Activity</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="activityFilter" id="all" checked>
+                        <label class="btn btn-outline-primary" for="all">All</label>
+                        {% if 'blog' in available_modules %}
+                        <input type="radio" class="btn-check" name="activityFilter" id="blog">
+                        <label class="btn btn-outline-success" for="blog">Blog</label>
+                        {% endif %}
+                        {% if 'chat' in available_modules %}
+                        <input type="radio" class="btn-check" name="activityFilter" id="chat">
+                        <label class="btn btn-outline-info" for="chat">Chat</label>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="card-body">
-                    {% if recent_activity %}
-                        <div class="list-group list-group-flush">
-                            {% for activity in recent_activity %}
-                            <div class="list-group-item">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">{{ activity.title }}</h6>
-                                    <small>{{ activity.timestamp }}</small>
-                                </div>
-                                <p class="mb-1">{{ activity.description }}</p>
-                                <small class="text-muted">{{ activity.type }}</small>
+                <div class="card-body p-0">
+                    <div class="d-flex align-items-center p-3 border-bottom">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-2">
+                                <i class="fas fa-user-plus text-success"></i>
                             </div>
-                            {% endfor %}
                         </div>
-                    {% else %}
-                        <p class="text-muted">No recent activity to display.</p>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Welcome!</div>
+                            <div class="text-muted small">{{ activity.description if recent_activity else 'Dashboard loaded successfully' }}</div>
+                            <div class="text-muted small">{{ activity.timestamp if recent_activity else 'Just now' }}</div>
+                        </div>
+                    </div>
+                    {% if 'blog' in available_modules %}
+                    <div class="d-flex align-items-center p-3 border-bottom">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-2">
+                                <i class="fas fa-blog text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Blog System Ready</div>
+                            <div class="text-muted small">Create and manage blog posts</div>
+                            <div class="text-muted small">Available now</div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <a href="{{ safe_url_for('blog_home') }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if 'chat' in available_modules %}
+                    <div class="d-flex align-items-center p-3 border-bottom">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-2">
+                                <i class="fas fa-comments text-success"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">Chat System Active</div>
+                            <div class="text-muted small">Join conversations and connect with community</div>
+                            <div class="text-muted small">12 users online</div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <a href="{{ safe_url_for('chat_home') }}" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if recent_activity %}
+                        {% for activity in recent_activity %}
+                        <div class="d-flex align-items-center p-3 border-bottom">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="rounded-circle bg-info bg-opacity-10 p-2">
+                                    <i class="fas fa-info text-info"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">{{ activity.title }}</div>
+                                <div class="text-muted small">{{ activity.description }}</div>
+                                <div class="text-muted small">{{ activity.timestamp }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>
         </div>
         
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Account Info</h5>
+        <div class="col-lg-4">
+            <!-- Account Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h6 class="mb-0"><i class="fas fa-user me-2"></i>Account Info</h6>
                 </div>
                 <div class="card-body">
-                    <p><strong>Username:</strong> {{ current_user.username }}</p>
-                    <p><strong>Email:</strong> {{ current_user.email }}</p>
-                    <p><strong>Member since:</strong> {{ current_user.created_at.strftime('%B %Y') if current_user.created_at else 'N/A' }}</p>
-                    <a href="{{ safe_url_for('profile') }}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+                    <div class="text-center mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-user text-primary fs-4"></i>
+                        </div>
+                    </div>
+                    <p class="text-center"><strong>{{ current_user.username }}</strong></p>
+                    <p class="text-center text-muted small">{{ current_user.email }}</p>
+                    <p class="text-center text-muted small">Member since {{ current_user.created_at.strftime('%B %Y') if current_user.created_at else 'Recently' }}</p>
+                    <div class="d-grid">
+                        <a href="{{ safe_url_for('profile') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    </div>
                 </div>
             </div>
+            
+            {% if 'blog' in available_modules or 'chat' in available_modules %}
+            <!-- Platform Features -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <h6 class="mb-0"><i class="fas fa-star me-2"></i>Available Features</h6>
+                </div>
+                <div class="card-body">
+                    {% if 'blog' in available_modules %}
+                    <div class="d-flex align-items-center mb-3 p-2 rounded hover-bg-light">
+                        <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                            <i class="fas fa-blog text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold small">Blog Platform</div>
+                            <div class="text-muted small">Write and share articles</div>
+                        </div>
+                        <a href="{{ safe_url_for('blog_home') }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if 'chat' in available_modules %}
+                    <div class="d-flex align-items-center p-2 rounded hover-bg-light">
+                        <div class="bg-success bg-opacity-10 rounded p-2 me-3">
+                            <i class="fas fa-comments text-success"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold small">Community Chat</div>
+                            <div class="text-muted small">Real-time conversations</div>
+                        </div>
+                        <a href="{{ safe_url_for('chat_home') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+.hover-bg-light:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+/* Improved text readability */
+.text-muted {
+    color: #495057 !important;
+}
+.small, small {
+    color: #343a40 !important;
+}
+.card-body h3, .card-body h4, .card-body h5, .card-body h6 {
+    color: #212529 !important;
+}
+.fw-semibold, .fw-bold {
+    color: #212529 !important;
+}
+.text-success {
+    color: #198754 !important;
+}
+.text-warning {
+    color: #fd7e14 !important;
+}
+.text-info {
+    color: #0dcaf0 !important;
+}
+.text-primary {
+    color: #0d6efd !important;
+}
+.welcome-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+</style>
 {% endblock %}

@@ -1,6 +1,43 @@
 """
-SQL Database module for Project L
-Handles database connections, user management, and data operations
+SQLite Database Management Module
+================================
+
+Production-ready database layer providing safe, efficient data operations for
+the modular Flask framework. Handles user management, blog content, and
+application data with proper connection management and error handling.
+
+Key Features:
+- Context-managed connections (automatic cleanup, rollback on errors)
+- Row-based access (dict-like result objects)
+- Safe parameterized queries (SQL injection prevention)
+- Automatic schema initialization
+- User management with profiles and sessions
+- Blog content management (posts, categories, search)
+- Soft deletion patterns (data preservation)
+
+Architecture:
+- Single SQLite database file for simplicity and portability  
+- Normalized schema with foreign key constraints
+- Indexed columns for performance on common queries
+- DateTime tracking for audit trails
+
+Usage:
+    # Initialize with Flask app's configured path
+    db = DatabaseManager('/path/to/database.db')
+    
+    # Use context manager for safe operations
+    with db.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE active = 1')
+        users = cursor.fetchall()
+
+Security Considerations:
+- All queries use parameterized statements
+- Password hashes only (never plain text)  
+- Session token management for authentication
+- Soft deletion preserves audit trail
+
+Author: Created through AI-assisted development focusing on best practices
 """
 
 import sqlite3
@@ -10,27 +47,69 @@ from contextlib import contextmanager
 
 class DatabaseManager:
     def __init__(self, db_path=None):
+        """
+        Initialize DatabaseManager with automatic schema setup.
+        
+        Args:
+            db_path (str, optional): Path to SQLite database file.
+                                   If None, uses default location in instance/ folder.
+        
+        The constructor automatically:
+        1. Determines database location (user-specified or default)
+        2. Creates directory structure if needed
+        3. Initializes database schema (tables, indexes, constraints)
+        """
         if db_path is None:
-            # Default fallback - use project root instance folder
+            # Default fallback - use project root instance folder for portability
             project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
             instance_dir = os.path.join(project_root, 'instance')
-            os.makedirs(instance_dir, exist_ok=True)
+            os.makedirs(instance_dir, exist_ok=True)  # Safe directory creation
             self.db_path = os.path.join(instance_dir, 'app.db')
         else:
+            # Use Flask app's configured database path
             self.db_path = db_path
+            
+        # Ensure parent directory exists for custom paths
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        
+        # Initialize schema - safe to call multiple times
         self.init_database()
     
     @contextmanager
     def get_connection(self):
-        """Context manager for database connections"""
+        """
+        Thread-safe database connection context manager.
+        
+        Provides automatic connection management with proper error handling:
+        - Establishes connection with row-based access
+        - Rolls back transactions on any exception
+        - Ensures connection is always closed (prevents file locks)
+        - Enables dict-like access to result rows
+        
+        Yields:
+            sqlite3.Connection: Database connection with Row factory
+            
+        Example:
+            with db.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+                user = cursor.fetchone()
+                if user:
+                    print(user['username'])  # Dict-like access
+        """
         conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row  # Enable column access by name
+        
+        # Enable dict-like access to columns by name instead of index
+        conn.row_factory = sqlite3.Row
+        
         try:
             yield conn
         except Exception as e:
+            # Rollback any pending transaction on error
             conn.rollback()
-            raise e
+            raise e  # Re-raise for caller to handle
         finally:
+            # Always close connection to prevent locks and resource leaks
             conn.close()
     
     def init_database(self):

@@ -32,14 +32,14 @@ CORE MODULES (Ready to Use):
    ├── Templates: chat.html, room.html, direct.html
    ├── Features: Chat rooms, direct messaging, message history, API endpoints
    ├── API: POST /chat/api/send for message submission
-   └── 🔗 Dependencies: None (enhanced by auth for user identification)
+   └── 🔗 Dependencies: database (enhanced by auth for user identification)
 
 6. 'blog' - Content Management System
    ├── Routes: /blog, /blog/post/<id>, /blog/write, /blog/search, /blog/category/<name>
    ├── Templates: blog.html, post.html, write.html, search.html, category.html
    ├── Features: Post creation/editing, categories, search, database persistence, author attribution
    ├── Database: Posts table with title, content, author, category, timestamps
-   └── 🔗 Dependencies: auth, database (auto-loaded) ⚠️
+   └── 🔗 Dependencies: auth, database
 
 DEPENDENCY INFORMATION:
 ----------------------

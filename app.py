@@ -6,10 +6,10 @@ Uses the modular Flask framework from library/
 from library import create_app
 
 app = create_app(
-        modules=['dashboard', 'database', 'auth'], 
+        modules=['blog', 'chat', 'dashboard', 'database', 'auth'], 
         config={
             'THEME': 'dark-modern',
-            'DASHBOARD_TYPE': 'chat',  
+            'DASHBOARD_TYPE': 'blog',  
         },
         site_name='default'
     )
