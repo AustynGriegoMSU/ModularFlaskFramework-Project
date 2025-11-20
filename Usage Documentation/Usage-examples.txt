@@ -1,5 +1,4 @@
 # Modular Flask Framework - Usage Examples
-
 This document provides practical examples of how to build different types of applications using the modular Flask framework.
 
 ## Quick Start Examples
@@ -70,123 +69,27 @@ app = create_app(
 # - Content creator dashboard
 ```
 
-## Advanced Configuration Examples
-
-### Custom Database Location
+### Example 4: Basic Chat Site
 ```python
-import os
+from library import create_app
 
+# Create a simple chat community
 app = create_app(
-    modules=['blog', 'auth', 'database', 'dashboard'],
-    config={
-        'DATABASE_PATH': os.path.join('data', 'my_custom.db'),
-        'THEME': 'dark-modern',
-        'DASHBOARD_TYPE': 'blog'
-    }
-)
-```
-
-### Environment-Based Configuration
-```python
-import os
-
-# Read configuration from environment variables
-app_type = os.environ.get('APP_TYPE', 'blog')
-theme = os.environ.get('THEME', 'light-professional')
-
-if app_type == 'community':
-    modules = ['blog', 'chat', 'auth', 'database', 'dashboard']
-    dashboard = 'chat'
-elif app_type == 'portfolio':
-    modules = ['blog', 'dashboard', 'auth', 'database']  
-    dashboard = 'blog'
-else:
-    modules = ['blog', 'dashboard', 'auth', 'database']
-    dashboard = 'blog'
-
-app = create_app(
-    modules=modules,
-    config={
-        'THEME': theme,
-        'DASHBOARD_TYPE': dashboard
-    }
-)
-```
-
-## Module Combinations Guide
-
-### Minimal Configurations
-```python
-# Static website only
-app = create_app(modules=['main'])
-
-# Simple dashboard
-app = create_app(modules=['dashboard'])
-
-# Blog without user accounts (demo data only)
-app = create_app(modules=['blog'])
-```
-
-### Recommended Combinations
-```python
-# Personal blog
-modules = ['blog', 'auth', 'database', 'dashboard']
-
-# Community platform  
-modules = ['blog', 'chat', 'auth', 'database', 'dashboard']
-
-# Business website
-modules = ['dashboard', 'blog', 'auth', 'database']
-```
-
-## Theme Showcase
-
-### Professional Business Site
-```python
-app = create_app(
-    modules=['dashboard', 'blog', 'auth'],
-    config={
-        'THEME': 'light-professional',
-        'DASHBOARD_TYPE': 'blog'
-    },
-    site_name='Business Solutions Inc.'
-)
-```
-
-### Developer/Tech Site
-```python
-app = create_app(
-    modules=['blog', 'auth', 'database', 'dashboard'],
+    modules=['chat', 'auth', 'database', 'dashboard'],
     config={
         'THEME': 'dark-modern',
-        'DASHBOARD_TYPE': 'blog'
-    },
-    site_name='DevBlog'
-)
-```
-
-### Gaming/Creative Site
-```python
-app = create_app(
-    modules=['chat', 'blog', 'auth', 'database', 'dashboard'],
-    config={
-        'THEME': 'cyberpunk-neon',
         'DASHBOARD_TYPE': 'chat'
     },
-    site_name='Neon Games'
+    site_name='ChatHub'
 )
-```
 
-### Portfolio/Creative Site
-```python
-app = create_app(
-    modules=['blog', 'dashboard', 'auth'],
-    config={
-        'THEME': 'space-animated',
-        'DASHBOARD_TYPE': 'blog'
-    },
-    site_name='Cosmic Creatives'
-)
+# What you get:
+# - Real-time chat rooms
+# - Direct messaging
+# - User authentication
+# - Chat-focused dashboard with online status
+# - Modern dark theme
+# - Message history and persistence
 ```
 
 ## Dashboard Types Explained
@@ -211,128 +114,3 @@ app = create_app(
 - Quick actions for all modules
 - Best for: Admin panels, general apps
 
-## Real-World Deployment Examples
-
-### Local Development
-```python
-# app.py
-from library import create_app
-
-app = create_app(
-    modules=['blog', 'chat', 'auth', 'database', 'dashboard'],
-    config={
-        'THEME': 'dark-modern',
-        'DEBUG': True,
-        'DATABASE_PATH': 'instance/dev.db',
-        'DASHBOARD_TYPE': 'default'
-    },
-    site_name='Dev Site'
-)
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-```
-
-### Production Configuration
-```python
-import os
-
-app = create_app(
-    modules=['blog', 'chat', 'auth', 'database', 'dashboard'],
-    config={
-        'SECRET_KEY': os.environ.get('SECRET_KEY', 'production-secret-key'),
-        'DEBUG': False,
-        'DATABASE_PATH': os.environ.get('DATABASE_URL', 'instance/production.db'),
-        'THEME': os.environ.get('THEME', 'light-professional'),
-        'DASHBOARD_TYPE': os.environ.get('DASHBOARD_TYPE', 'default')
-    },
-    site_name=os.environ.get('SITE_NAME', 'My Platform')
-)
-```
-
-## Troubleshooting Common Scenarios
-
-### Missing Dependencies
-```python
-# This will auto-add 'auth' and 'database' for you
-app = create_app(modules=['blog', 'dashboard'])
-
-# Console output:
-# 📋 Requested: ['blog', 'dashboard']
-# ✅ Loading: ['database', 'auth', 'blog', 'dashboard'] 
-# ⚠️  Auto-added dependency 'database' required by 'blog'
-# ⚠️  Auto-added dependency 'auth' required by 'blog'
-```
-
-### Template Safety
-```python
-# Templates use safe_url_for to prevent broken links
-# If 'blog' module isn't loaded, links return '#' instead of breaking
-<a href="{{ safe_url_for('blog_home') }}">Blog</a>
-```
-
-### Database Location Issues
-```python
-# Ensure database is saved to correct location
-import os
-
-# Project root instance folder (recommended)
-database_path = os.path.join(os.getcwd(), 'instance', 'app.db')
-
-app = create_app(
-    modules=['database'],
-    config={'DATABASE_PATH': database_path}
-)
-```
-
-## Performance Tips
-
-### Minimize Modules for Speed
-```python
-# Only load what you need
-# Faster startup, smaller memory footprint
-app = create_app(modules=['blog', 'auth', 'dashboard'])  # Essential only
-
-# vs loading everything
-app = create_app(modules=['blog', 'chat', 'auth', 'database', 'dashboard'])
-```
-
-### Theme Caching
-```python
-# Use cache buster for theme updates in production
-app = create_app(
-    config={
-        'THEME': 'dark-modern',
-        'CACHE_BUSTER': '2.0'  # Increment when CSS changes
-    }
-)
-```
-
-## Extension Examples
-
-### Adding Custom Routes
-```python
-from library import create_app
-
-app = create_app(modules=['dashboard'])
-
-# Add custom route
-@app.route('/api/status')
-def api_status():
-    return {'status': 'ok', 'modules': app.config['MODULES']}
-```
-
-### Custom Configuration
-```python
-app = create_app(
-    modules=['blog', 'auth', 'dashboard'],
-    config={
-        'CUSTOM_SETTING': 'my_value',
-        'POSTS_PER_PAGE': 10,
-        'ENABLE_COMMENTS': True,
-        'DASHBOARD_TYPE': 'blog'
-    }
-)
-```
-
-This framework demonstrates the power of modular architecture - the same codebase creates vastly different applications through intelligent module composition and configuration.
