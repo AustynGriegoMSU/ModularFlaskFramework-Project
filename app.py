@@ -8,10 +8,10 @@ from library import create_app
 app = create_app(
         modules=['blog', 'chat', 'dashboard', 'database', 'auth'], 
         config={
-            'THEME': 'dark-modern',
-            'DASHBOARD_TYPE': 'blog',  
+            'THEME': 'cyberpunk-neon',
+            'DASHBOARD_TYPE': 'chat',  
         },
-        site_name='default'
+        site_name='Project X'
     )
 
 # Debug route to check theme and dashboard

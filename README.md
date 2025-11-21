@@ -4,7 +4,7 @@
 
 ## 🎯 Project Overview
 
-This is a production-ready modular Flask framework that transforms web application development from weeks to minutes. By selecting modules and configuration, you can instantly create different types of applications: blogs, community platforms, portfolios, or custom solutions.
+This is a production-ready modular Flask framework that transforms web application development from days to minutes. By selecting modules and configuration, you can instantly create different types of applications: blogs, community platforms, portfolios, or custom solutions.
 
 ### ✨ Key Innovations
 
