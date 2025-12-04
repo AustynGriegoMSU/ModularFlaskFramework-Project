@@ -1,0 +1,9 @@
+source .venv/bin/activate
+
+git checkout chat
+git checkout blog
+git checkout dependency
+
+flask run 
+--or--
+python app.py
